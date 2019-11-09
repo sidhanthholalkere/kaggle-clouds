@@ -106,7 +106,7 @@ def main():
     if optim =="adamw":
         optimizer = AdamW([
             {'params': model.encoder.parameters(), 'lr': enc_lr},
-            {'params': model.encoder.parameters(), 'lr': dec_lr},
+            {'params': model.decoder.parameters(), 'lr': dec_lr},
         ])
 
     scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
