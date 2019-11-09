@@ -111,7 +111,7 @@ def main():
 
     scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
     if schedule == "rlop":
-        scheduler = ReduceLROnPlateau(optimizer, factor=0.15, patience=5)
+        scheduler = ReduceLROnPlateau(optimizer, factor=0.15, patience=3)
     if schedule == "noam":
         scheduler = NoamLR(optimizer, 10)
 
