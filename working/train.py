@@ -5,6 +5,8 @@ import multiprocessing
 from dataset import get_dataset, prepare_dataset, get_train_test, CloudDataset, get_preprocessing
 from augmentations import training1, valid1
 from radam import RAdam
+from torch.optim import AdamW, Adam
+from schedulers import NoamLR
 
 import segmentation_models_pytorch as smp
 from torch.utils.data import DataLoader
@@ -26,8 +28,13 @@ def main():
     parser.add_argument('--width', type=int, default=640)
     parser.add_argument('--batch_size', type=int, default=2)
     parser.add_argument('--accumulate', type=int, default=8)
-    parser.add_argument('--num_epochs', type=int, default=20)
-    parser.add_argument('--lr', type=float, default=1e-3)
+    parser.add_argument('--epochs', type=int, default=20)
+    parser.add_argument('--enc_lr', type=float, default=1e-2)
+    parser.add_argument('--dec_lr', type=float, default=1e-3)
+    parser.add_argument('--optim', type=str, default="radam")
+    parser.add_argument('--loss', type=str, default="bcedice")
+    parser.add_argument('--schedule', type=str, default="rlop")
+    parser.add_argument('--early_stopping', type=bool, default=True)
     
 
     args = parser.parse_args()
@@ -42,8 +49,13 @@ def main():
     width = args.width
     bs = args.batch_size
     accumulate = args.accumulate
-    epochs = args.num_epochs
-    lr = args.lr
+    epochs = args.epochs
+    enc_lr = args.enc_lr
+    dec_lr = args.dec_lr
+    optim = args.optim
+    loss = args.loss
+    schedule = args.schedule
+    early_stopping = args.early_stopping
 
     if model == 'unet':
         model = smp.Unet(
@@ -51,6 +63,13 @@ def main():
             encoder_weights=pretrained,
             classes=4,
             activation=None
+        )
+    if model == 'fpn':
+        model = smp.FPN(
+            encoder_name=encoder,
+            encoder_weights=pretrained,
+            classes=4,
+            activation=None,
         )
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(encoder, pretrained)
@@ -74,14 +93,42 @@ def main():
 
     num_epochs = epochs
 
-    optimizer = RAdam(
-        model.parameters(), 
-        lr=lr,
-    )
+    if optim == "radam":
+        optimizer = RAdam([
+            {'params': model.encoder.parameters(), 'lr': enc_lr},
+            {'params': model.encoder.parameters(), 'lr': dec_lr},
+        ])
+    if optim == "adam":
+        optimizer = Adam([
+            {'params': model.encoder.parameters(), 'lr': enc_lr},
+            {'params': model.encoder.parameters(), 'lr': dec_lr},
+        ])
+    if optim =="adamw":
+        optimizer = AdamW([
+            {'params': model.encoder.parameters(), 'lr': enc_lr},
+            {'params': model.encoder.parameters(), 'lr': dec_lr},
+        ])
 
     scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
-    criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
-    callbacks = [DiceCallback(), EarlyStoppingCallback(patience=10, min_delta=0.001), CriterionCallback(), OptimizerCallback(accumulation_steps=accumulate)]
+    if schedule == "rlop":
+        scheduler = ReduceLROnPlateau(optimizer, factor=0.15, patience=5)
+    if schedule == "noam":
+        scheduler = NoamLR(optimizer, 10)
+
+    if loss == "bcedice":
+        criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
+    if loss == "dice":
+        criterion = smp.utils.losses.DiceLoss(eps=1.)
+    if loss == "bcejaccard":
+        criterion = smp.utils.losses.BCEJaccardLoss(eps=1.)
+    if loss == "jaccard":
+        criterion == smp.utils.losses.JaccardLoss(eps=1.)
+
+    callbacks = [DiceCallback(), CriterionCallback()]
+
+    callbacks.append(OptimizerCallback(accumulation_steps=accumulate))
+    if early_stopping:
+        callbacks.append(EarlyStoppingCallback(patience=5, min_delta=0.001))
 
     runner = SupervisedRunner()
     runner.train(
