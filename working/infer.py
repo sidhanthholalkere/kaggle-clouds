@@ -84,7 +84,7 @@ def main():
     if optimize:
         print("OPTIMIZING")
         if tta_pre:
-            opt_model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip()]), merge_mode=merge)
+            opt_model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip(), tta.VerticalFlip()]), merge_mode=merge)
         else: 
             opt_model = model
         tta_runner = SupervisedRunner()
@@ -149,7 +149,7 @@ def main():
     gc.collect()
 
     if tta_post:
-        model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip()]), merge_mode=merge)
+        model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip(), tta.VerticalFlip]), merge_mode=merge)
     else:
         model = model
     
