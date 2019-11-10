@@ -96,7 +96,7 @@ def main():
         )
 
         valid_masks = []
-        probabilities = np.zeros((len(valid_loader), 350, 525))
+        probabilities = np.zeros((4*len(valid_loader), 350, 525))
         for i, (batch, output) in enumerate(tqdm(zip(valid_dataset, tta_runner.callbacks[0].predictions["logits"]))):
             _, mask = batch
             for m in mask:
@@ -107,7 +107,7 @@ def main():
             for j, probability in enumerate(output):
                 if probability.shape != (350, 525):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
-                probabilities[i * 4 + j-1, :, :] = probability
+                probabilities[(i * 4) + j, :, :] = probability
 
         print("RUNNING GRID SEARCH")
         for class_id in range(4):
