@@ -107,7 +107,7 @@ def main():
             for j, probability in enumerate(output):
                 if probability.shape != (350, 525):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
-                probabilities[i * 4 + j, :, :] = probability
+                probabilities[i * 4 + j-1, :, :] = probability
 
         print("RUNNING GRID SEARCH")
         for class_id in range(4):
