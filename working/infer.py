@@ -176,8 +176,6 @@ def main():
                 encoded_pixels.append(r)
             image_id += 1
 
-    assert len(test_ids) == len(encoded_pixels)
-
     test_df['EncodedPixels'] = encoded_pixels
     test_df.to_csv(name, columns=['Image_Label', 'EncodedPixels'], index=False)
 
