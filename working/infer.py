@@ -4,6 +4,7 @@ from augmentations import valid1
 import os
 import ttach as tta
 import argparse
+import gc
 
 import torch
 from torch.utils.data import DataLoader
@@ -145,6 +146,7 @@ def main():
         del tta_runner
         del valid_masks
         del probabilities
+    gc.collect()
 
     if tta_post:
         model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip()]), merge_mode=merge)
