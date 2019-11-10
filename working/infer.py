@@ -96,7 +96,7 @@ def main():
         )
 
         valid_masks = []
-        probabilities = np.zeros((4*len(valid_loader)+1, 350, 525))
+        probabilities = np.zeros((4*len(valid_dataset), 350, 525))
         for i, (batch, output) in enumerate(tqdm(zip(valid_dataset, tta_runner.callbacks[0].predictions["logits"]))):
             _, mask = batch
             for m in mask:
