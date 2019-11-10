@@ -66,7 +66,7 @@ def main():
 
     test_df = get_dataset(train=False)
     test_df = prepare_dataset(test_df)
-    test_ids = test_df['Image_label'].apply(lambda x: x.split('_')[0]).drop_duplicates().values
+    test_ids = test_df['Image_Label'].apply(lambda x: x.split('_')[0]).drop_duplicates().values
     test_dataset = CloudDataset(df=test_df, datatype='test', img_ids=test_ids, transforms=valid1(), preprocessing=get_preprocessing(preprocessing_fn))
     test_loader = DataLoader(test_dataset, batch_size=bs, shuffle=False)
 
