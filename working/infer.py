@@ -142,6 +142,9 @@ def main():
             class_params[class_id] = (best_threshold, best_size)
         
         del opt_model
+        del tta_runner
+        del valid_masks
+        del probabilities
 
     if tta_post:
         model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip()]), merge_mode=merge)
