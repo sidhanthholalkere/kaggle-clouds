@@ -63,7 +63,7 @@ def main():
             activation=None,
         )
     if model == 'pspnet':
-        model = smp.FPN(
+        model = smp.PSPNet(
             encoder_name=encoder,
             encoder_weights='imagenet',
             classes=4,
