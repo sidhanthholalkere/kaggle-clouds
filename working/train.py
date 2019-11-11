@@ -78,6 +78,13 @@ def main():
             classes=4,
             activation=None,
         )
+    if model == 'linknet':
+        model = smp.Linknet(
+            encoder_name=encoder,
+            encoder_weights=pretrained,
+            classes=4,
+            activation=None,
+        )
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(encoder, pretrained)
     log = os.path.join(logdir, name)
