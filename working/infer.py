@@ -62,6 +62,13 @@ def main():
             classes=4,
             activation=None,
         )
+    if model == 'pspnet':
+        model = smp.FPN(
+            encoder_name=encoder,
+            encoder_weights='imagenet',
+            classes=4,
+            activation=None,
+        )
     
     preprocessing_fn = smp.encoders.get_preprocessing_fn(encoder, 'imagenet')
 
@@ -149,7 +156,7 @@ def main():
     gc.collect()
 
     if tta_post:
-        model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip(), tta.VerticalFlip]), merge_mode=merge)
+        model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip(), tta.VerticalFlip()]), merge_mode=merge)
     else:
         model = model
     
