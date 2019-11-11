@@ -11,6 +11,7 @@ from schedulers import NoamLR
 import segmentation_models_pytorch as smp
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim import SGD
 
 from catalyst.dl import utils
 from catalyst.dl.runner import SupervisedRunner
@@ -123,7 +124,7 @@ def main():
             {'params': model.decoder.parameters(), 'lr': dec_lr},
         ])
     if optim == "sgd":
-        optimizer = torch.optim.sgd([
+        optimizer = SGD([
             {'params': model.encoder.parameters(), 'lr': enc_lr},
             {'params': model.decoder.parameters(), 'lr': dec_lr},
         ])
