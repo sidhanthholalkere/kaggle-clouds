@@ -72,7 +72,7 @@ def main():
     if model == 'linknet':
         model = smp.Linknet(
             encoder_name=encoder,
-            encoder_weights=pretrained,
+            encoder_weights='imagenet',
             classes=4,
             activation=None,
         )
@@ -98,7 +98,7 @@ def main():
     if optimize:
         print("OPTIMIZING")
         if tta_pre:
-            opt_model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip(), tta.VerticalFlip()]), merge_mode=merge)
+            opt_model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip(), tta.VerticalFlip(), tta.Rotate90(angles=[0, 180])]), merge_mode=merge)
         else: 
             opt_model = model
         tta_runner = SupervisedRunner()
@@ -163,7 +163,7 @@ def main():
     gc.collect()
 
     if tta_post:
-        model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip(), tta.VerticalFlip()]), merge_mode=merge)
+        model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip(), tta.VerticalFlip(), tta.Rotate90(angles=[0, 180])]), merge_mode=merge)
     else:
         model = model
     

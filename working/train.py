@@ -122,6 +122,11 @@ def main():
             {'params': model.encoder.parameters(), 'lr': enc_lr},
             {'params': model.decoder.parameters(), 'lr': dec_lr},
         ])
+    if optim == "sgd":
+        optimizer = torch.optim.sgd([
+            {'params': model.encoder.parameters(), 'lr': enc_lr},
+            {'params': model.decoder.parameters(), 'lr': dec_lr},
+        ])
 
     scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
     if schedule == "rlop":
