@@ -27,8 +27,8 @@ def main():
     parser.add_argument('--data_folder', type=str, default='../input/')
     parser.add_argument('--batch_size', type=int, default=2)
     parser.add_argument('--optimize', type=bool, default=False)
-    parser.add_argument('--tta-pre', type=bool, default=False)
-    parser.add_argument('--tta-post', type=bool, default=False)
+    parser.add_argument('--tta_pre', type=bool, default=False)
+    parser.add_argument('--tta_post', type=bool, default=False)
     parser.add_argument('--merge', type=str, default='mean')
     parser.add_argument('--min_size', type=int, default=10000)
     parser.add_argument('--thresh', type=float, default=0.5)
@@ -97,6 +97,7 @@ def main():
 
     if optimize:
         print("OPTIMIZING")
+        print(tta_pre)
         if tta_pre:
             opt_model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip(), tta.VerticalFlip(), tta.Rotate90(angles=[0, 180])]), merge_mode=merge)
         else: 
@@ -166,6 +167,7 @@ def main():
         model = tta.SegmentationTTAWrapper(model, tta.Compose([tta.HorizontalFlip(), tta.VerticalFlip(), tta.Rotate90(angles=[0, 180])]), merge_mode=merge)
     else:
         model = model
+    print(tta_post)
     
     runner = SupervisedRunner()
     runner.infer(
