@@ -112,7 +112,7 @@ def main():
 
     num_epochs = epochs
     
-    if model != 'aspp'
+    if model != "aspp":
         if optim == "radam":
             optimizer = RAdam([
                 {'params': model.encoder.parameters(), 'lr': enc_lr},
@@ -133,7 +133,7 @@ def main():
                 {'params': model.encoder.parameters(), 'lr': enc_lr},
                 {'params': model.decoder.parameters(), 'lr': dec_lr},
             ])
-    else if model == 'aspp':
+    elif model == 'aspp':
         if optim == "radam":
             optimizer = RAdam([
                 {'params': model.parameters(), 'lr': enc_lr},
