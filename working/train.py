@@ -112,7 +112,7 @@ def main():
 
     num_epochs = epochs
     
-    if model != "aspp":
+    if args.model != "aspp":
         if optim == "radam":
             optimizer = RAdam([
                 {'params': model.encoder.parameters(), 'lr': enc_lr},
@@ -133,7 +133,7 @@ def main():
                 {'params': model.encoder.parameters(), 'lr': enc_lr},
                 {'params': model.decoder.parameters(), 'lr': dec_lr},
             ])
-    elif model == 'aspp':
+    elif args.model == 'aspp':
         if optim == "radam":
             optimizer = RAdam([
                 {'params': model.parameters(), 'lr': enc_lr},
@@ -165,7 +165,7 @@ def main():
         criterion = smp.utils.losses.BCEJaccardLoss(eps=1.)
     if loss == "jaccard":
         criterion == smp.utils.losses.JaccardLoss(eps=1.)
-    if loss = 'bce':
+    if loss == 'bce':
         criterion = torch.nn.BCELoss()
 
     callbacks = [DiceCallback(), CriterionCallback()]
