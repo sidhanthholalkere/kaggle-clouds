@@ -4,6 +4,7 @@ import multiprocessing
 
 from dataset import get_dataset, prepare_dataset, get_train_test, CloudDataset, get_preprocessing
 from augmentations import training1, valid1
+from aspp import aspp
 from radam import RAdam
 from torch.optim import AdamW, Adam
 from schedulers import NoamLR
@@ -86,6 +87,9 @@ def main():
             classes=4,
             activation=None,
         )
+    if model == 'aspp':
+        print('aspp can only be used with resnet34')
+        model = aspp(num_class=4)
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(encoder, pretrained)
     log = os.path.join(logdir, name)
