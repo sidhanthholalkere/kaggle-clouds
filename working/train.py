@@ -13,6 +13,7 @@ import segmentation_models_pytorch as smp
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.optim import SGD
+import torch
 
 from catalyst.dl import utils
 from catalyst.dl.runner import SupervisedRunner
