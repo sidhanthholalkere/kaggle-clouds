@@ -15,9 +15,12 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.optim import SGD
 import torch
 
+import catalyst
 from catalyst.dl import utils
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, CriterionCallback, OptimizerCallback
+
+from dice import NewDiceCallback
 
 def main():
     parser=argparse.ArgumentParser()
@@ -169,7 +172,7 @@ def main():
     if loss == 'bce':
         criterion = NewBCELoss()
 
-    callbacks = [DiceCallback(), CriterionCallback()]
+    callbacks = [NewDiceCallback(), CriterionCallback()]
 
     callbacks.append(OptimizerCallback(accumulation_steps=accumulate))
     if early_stopping:
