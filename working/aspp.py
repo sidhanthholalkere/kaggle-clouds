@@ -1,4 +1,4 @@
-from torchvision.models import resnet34
+from resnet import *
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
@@ -163,6 +163,52 @@ class JointPyramidUpsample(nn.Module):
         x = torch.cat([d0,d1,d2,d3], dim=1)
         return x
 
+class ResNet34(nn.Module):
+
+    def __init__(self, num_class=1000 ):
+        super(ResNet34, self).__init__()
+
+
+        self.block0  = nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=7, padding=3, stride=2, bias=True),
+            BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+        )
+        self.block0[0].bias.data.fill_(0.0)
+
+        self.block1  = nn.Sequential(
+             nn.MaxPool2d(kernel_size=3, padding=1, stride=2),
+             BasicBlock( 64, 64, 64, stride=1, is_shortcut=False,),
+          * [BasicBlock( 64, 64, 64, stride=1, is_shortcut=False,) for i in range(1,3)],
+        )
+        self.block2  = nn.Sequential(
+             BasicBlock( 64,128,128, stride=2, is_shortcut=True, ),
+          * [BasicBlock(128,128,128, stride=1, is_shortcut=False,) for i in range(1,4)],
+        )
+        self.block3  = nn.Sequential(
+             BasicBlock(128,256,256, stride=2, is_shortcut=True, ),
+          * [BasicBlock(256,256,256, stride=1, is_shortcut=False,) for i in range(1,6)],
+        )
+        self.block4 = nn.Sequential(
+             BasicBlock(256,512,512, stride=2, is_shortcut=True, ),
+          * [BasicBlock(512,512,512, stride=1, is_shortcut=False,) for i in range(1,3)],
+        )
+        self.logit = nn.Linear(512,num_class)
+
+
+
+    def forward(self, x):
+        batch_size = len(x)
+
+        x = self.block0(x)
+        x = self.block1(x)
+        x = self.block2(x)
+        x = self.block3(x)
+        x = self.block4(x)
+        x = F.adaptive_avg_pool2d(x,1).reshape(batch_size,-1)
+        logit = self.logit(x)
+        return logit
+
 class aspp(nn.Module):
     #def load_pretrain(self, skip=['logit.'], is_print=True):
     #    load_pretrain(self, skip, pretrain_file=PRETRAIN_FILE, conversion=CONVERSION, is_print=is_print)
@@ -170,7 +216,7 @@ class aspp(nn.Module):
     def __init__(self, num_class=4):
         super(aspp, self).__init__()
 
-        e = resnet34()
+        e = ResNet34()
         self.block0 = e.block0
         self.block1 = e.block1
         self.block2 = e.block2
