@@ -184,7 +184,7 @@ def main():
         callbacks=callbacks,
         logdir=log,
         num_epochs=num_epochs,
-        verbose=True
+        verbose=False,
     )
 
 
