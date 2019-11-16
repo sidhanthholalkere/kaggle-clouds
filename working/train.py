@@ -111,27 +111,45 @@ def main():
     }
 
     num_epochs = epochs
-
-    if optim == "radam":
-        optimizer = RAdam([
-            {'params': model.encoder.parameters(), 'lr': enc_lr},
-            {'params': model.decoder.parameters(), 'lr': dec_lr},
-        ])
-    if optim == "adam":
-        optimizer = Adam([
-            {'params': model.encoder.parameters(), 'lr': enc_lr},
-            {'params': model.decoder.parameters(), 'lr': dec_lr},
-        ])
-    if optim =="adamw":
-        optimizer = AdamW([
-            {'params': model.encoder.parameters(), 'lr': enc_lr},
-            {'params': model.decoder.parameters(), 'lr': dec_lr},
-        ])
-    if optim == "sgd":
-        optimizer = SGD([
-            {'params': model.encoder.parameters(), 'lr': enc_lr},
-            {'params': model.decoder.parameters(), 'lr': dec_lr},
-        ])
+    
+    if model != 'aspp'
+        if optim == "radam":
+            optimizer = RAdam([
+                {'params': model.encoder.parameters(), 'lr': enc_lr},
+                {'params': model.decoder.parameters(), 'lr': dec_lr},
+            ])
+        if optim == "adam":
+            optimizer = Adam([
+                {'params': model.encoder.parameters(), 'lr': enc_lr},
+                {'params': model.decoder.parameters(), 'lr': dec_lr},
+            ])
+        if optim =="adamw":
+            optimizer = AdamW([
+                {'params': model.encoder.parameters(), 'lr': enc_lr},
+                {'params': model.decoder.parameters(), 'lr': dec_lr},
+            ])
+        if optim == "sgd":
+            optimizer = SGD([
+                {'params': model.encoder.parameters(), 'lr': enc_lr},
+                {'params': model.decoder.parameters(), 'lr': dec_lr},
+            ])
+    else if model == 'aspp':
+        if optim == "radam":
+            optimizer = RAdam([
+                {'params': model.parameters(), 'lr': enc_lr},
+            ])
+        if optim == "adam":
+            optimizer = Adam([
+                {'params': model.parameters(), 'lr': enc_lr},
+            ])
+        if optim =="adamw":
+            optimizer = AdamW([
+                {'params': model.parameters(), 'lr': enc_lr},
+            ])
+        if optim == "sgd":
+            optimizer = SGD([
+                {'params': model.parameters(), 'lr': enc_lr},
+            ])
 
     scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
     if schedule == "rlop":
@@ -147,6 +165,8 @@ def main():
         criterion = smp.utils.losses.BCEJaccardLoss(eps=1.)
     if loss == "jaccard":
         criterion == smp.utils.losses.JaccardLoss(eps=1.)
+    if loss = 'bce':
+        criterion = torch.nn.BCELoss()
 
     callbacks = [DiceCallback(), CriterionCallback()]
 
