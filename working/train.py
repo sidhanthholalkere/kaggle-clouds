@@ -167,7 +167,7 @@ def main():
     if loss == "jaccard":
         criterion == smp.utils.losses.JaccardLoss(eps=1.)
     if loss == 'bce':
-        criterion = torch.nn.BCELoss()
+        criterion = torch.nn.BCEWithLogitsLoss(reduction='mean')
 
     callbacks = [DiceCallback(), CriterionCallback()]
 
