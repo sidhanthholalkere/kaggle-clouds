@@ -246,4 +246,4 @@ class aspp(nn.Module):
         #---
         probability_mask  = torch.sigmoid(logit)
         probability_label = F.adaptive_max_pool2d(probability_mask,1).view(batch_size,-1)
-        return probability_label, probability_mask
+        return probability_mask
