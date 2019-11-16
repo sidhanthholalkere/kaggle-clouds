@@ -74,6 +74,18 @@ def resize_like(x, reference, mode='bilinear'):
             x = F.interpolate(x, size=reference.shape[2:],mode='nearest')
     return x
 
+class NewBCELoss(nn.Module):
+    __name__ = 'bce_loss'
+
+    def __init__(self, eps=1., activation='sigmoid'):
+        super().__init__()
+        self.activation = activation
+        self.eps = eps
+    
+    def forward(self, y_pr, y_gt):
+        new_prob_mask = resize_like(y_pr, y_gt, mode='bilinear')
+        return F.binary_cross_entropy(new_prob_mask, y_gt, reduction='mean')
+
 def fuse(x, mode='cat'):
     batch_size,C0,H0,W0 = x[0].shape
 
@@ -247,3 +259,4 @@ class aspp(nn.Module):
         probability_mask  = torch.sigmoid(logit)
         probability_label = F.adaptive_max_pool2d(probability_mask,1).view(batch_size,-1)
         return probability_mask
+

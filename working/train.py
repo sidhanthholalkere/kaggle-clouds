@@ -4,7 +4,7 @@ import multiprocessing
 
 from dataset import get_dataset, prepare_dataset, get_train_test, CloudDataset, get_preprocessing
 from augmentations import training1, valid1
-from aspp import aspp
+from aspp import aspp, resize_like, NewBCELoss
 from radam import RAdam
 from torch.optim import AdamW, Adam
 from schedulers import NoamLR
@@ -167,7 +167,7 @@ def main():
     if loss == "jaccard":
         criterion == smp.utils.losses.JaccardLoss(eps=1.)
     if loss == 'bce':
-        criterion = torch.nn.BCEWithLogitsLoss(reduction='mean')
+        criterion = NewBCELoss()
 
     callbacks = [DiceCallback(), CriterionCallback()]
 
